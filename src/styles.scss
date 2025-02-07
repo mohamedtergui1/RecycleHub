@@ -3,3 +3,15 @@
 @use './assets/layout/layout.scss';
 @use 'primeicons/primeicons.css';
 @use './assets/demo/demo.scss';
+
+input-error-color {
+    color: red;
+}
+
+input-error-background {
+    background-color: red;
+}
+
+input-error-border{
+    border: red 2px solid;
+}

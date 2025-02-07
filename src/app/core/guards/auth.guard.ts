@@ -4,6 +4,6 @@ import { Inject } from '@angular/core';
 
 export const authGuard: CanActivateFn = (route, state) => {
   const authService:AuthService = Inject(AuthService)
-  
-  return true;
+
+  return authService.isAuthenticated();
 };

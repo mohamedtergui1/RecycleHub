@@ -76,8 +76,8 @@ export class AuthService {
         );
     }
 
-    register(userData: Omit<UserType, 'id'>): Observable<UserType> {
-        return this.http.post<UserType>(`/auth/register`, userData);
+    register(userData: UserType): Observable<UserType> {
+        return this.http.post<UserType>(`/users`, userData);
     }
 
     logout(): void {
@@ -121,4 +121,6 @@ export class AuthService {
     resetPassword(email: string): Observable<{ success: boolean }> {
         return this.http.post<{ success: boolean }>(`/auth/reset-password`, { email });
     }
+
+    
 }
