@@ -35,8 +35,7 @@ export class CollectionRequestComponent {
             ],
             address: {
                 street: '123 Green Street',
-                city: 'Portland',
-                postalCode: '97201'
+                city: 'Portland'
             },
             date: new Date('2025-02-15'),
             timeSlot: '09:00-12:00',
@@ -57,26 +56,7 @@ export class CollectionRequestComponent {
     constructor() {}
 
     ngOnInit() {
-        // this.productService.getProductsSmall().then((data) => (this.products = data.slice(0, 6)));
-        // this.sourceCities = [
-        //     { name: 'San Francisco', code: 'SF' },
-        //     { name: 'London', code: 'LDN' },
-        //     { name: 'Paris', code: 'PRS' },
-        //     { name: 'Istanbul', code: 'IST' },
-        //     { name: 'Berlin', code: 'BRL' },
-        //     { name: 'Barcelona', code: 'BRC' },
-        //     { name: 'Rome', code: 'RM' }
-        // ];
-        // this.targetCities = [];
-        // this.orderCities = [
-        //     { name: 'San Francisco', code: 'SF' },
-        //     { name: 'London', code: 'LDN' },
-        //     { name: 'Paris', code: 'PRS' },
-        //     { name: 'Istanbul', code: 'IST' },
-        //     { name: 'Berlin', code: 'BRL' },
-        //     { name: 'Barcelona', code: 'BRC' },
-        //     { name: 'Rome', code: 'RM' }
-        // ];
+
     }
 
     getStatusSeverity(request: CollectionRequest): 'success' | 'secondary' | 'info' | 'warn' | 'danger' | 'contrast' | undefined {
@@ -94,6 +74,10 @@ export class CollectionRequestComponent {
             default:
                 return 'info';
         }
+    }
+
+    getTotalKilos(wastes: WasteItem[]): number {
+        return wastes.reduce((sum, waste) => sum + waste.kilos, 0);
     }
 
     formatAddress(address: any): string {

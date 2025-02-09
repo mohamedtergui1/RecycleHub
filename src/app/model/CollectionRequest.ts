@@ -29,7 +29,6 @@ export enum WasteType {
     address: {
       street: string;
       city: string;
-      postalCode?: string;
     };
     date: Date;
     timeSlot: string;
