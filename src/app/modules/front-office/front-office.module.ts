@@ -11,6 +11,7 @@ import {FormsModule, ReactiveFormsModule} from "@angular/forms";
 import {FormCollectionRequestComponent} from './compoennts/form-collection-request/form-collection-request.component';
 import {EditProfileComponent} from "./pages/edit-profile/edit-profile.component";
 import {RequestViewComponent} from './compoennts/request-view/request-view.component';
+import { EditRequestComponent } from './compoennts/edit-request/edit-request.component';
 
 
 @NgModule({
@@ -22,6 +23,7 @@ import {RequestViewComponent} from './compoennts/request-view/request-view.compo
     FormCollectionRequestComponent,
     EditProfileComponent,
     RequestViewComponent,
+    EditRequestComponent,
   ],
   imports: [
     SharedModule,

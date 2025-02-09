@@ -1,11 +1,13 @@
-import {Component, OnInit} from '@angular/core';
-import {CollectionRequest} from "../../../../models/DemandeCollecte";
-import {CollectionRequestService} from "../../../../core/services/collection-request.service";
-import {AuthService} from "../../../../core/services/auth.service";
-import {User} from "../../../../models/User";
-import {selectCurrentUser} from "../../../../store/user/user.selectors";
-import {Store} from "@ngrx/store";
-import {AppState} from "../../../../store/app.state";
+import { Component, OnInit } from '@angular/core';
+import { CollectionRequest } from "../../../../models/DemandeCollecte";
+import { CollectionRequestService } from "../../../../core/services/collection-request.service";
+import { AuthService } from "../../../../core/services/auth.service";
+import { User } from "../../../../models/User";
+import { selectCurrentUser } from "../../../../store/user/user.selectors";
+import { Store } from "@ngrx/store";
+import { AppState } from "../../../../store/app.state";
+import { RequestStatus } from '../../../../models/RequestStatus';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-request-view',
@@ -19,7 +21,9 @@ export class RequestViewComponent implements OnInit {
   constructor(
     private collectionRequestService: CollectionRequestService,
     private authService: AuthService,
-    private store:Store<AppState>
+    private store: Store<AppState>
+    ,
+    private router: Router
   ) {
   }
 
@@ -33,7 +37,7 @@ export class RequestViewComponent implements OnInit {
 
   loadUserRequests(): void {
     this.user$.subscribe(user => {
-      this.currentUser=user;
+      this.currentUser = user;
     })
 
     if (this.currentUser) {
@@ -48,11 +52,26 @@ export class RequestViewComponent implements OnInit {
     return wasteItems.reduce((total, item) => total + item.weight, 0);
   }
 
-  onEdit(id: string): void {
-    console.log('Edit request for ID:', id);
+  canEdit(status: RequestStatus): boolean {
+    return status == RequestStatus.PENDING
   }
 
-  onDelete(id: string): void {
-    console.log('Delete request for ID:', id);
+  onDelete(id: string | undefined): void {
+    if (!id) return;
+
+    const confirmDelete = window.confirm("Are you sure you want to delete this request?");
+
+    if (confirmDelete) {
+      this.collectionRequestService.deleteRequest(id).subscribe(() => {
+        this.collectionRequests = this.collectionRequests.filter(e => e.id !== id);
+        alert("Request deleted successfully."); // Optional success message
+      }, error => {
+        alert("Failed to delete request. Please try again."); // Handle errors
+      });
+    }
   }
+
+
+
 }
+
