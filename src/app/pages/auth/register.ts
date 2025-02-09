@@ -24,7 +24,9 @@ import { AppFloatingConfigurator } from '../../layout/component/app.floatingconf
 import { LogoComponent } from '../../shared/logo/logo.component';
 
 // Services
-import { AuthService, UserType } from '../service/auth.service';
+import { AuthService } from '../service/auth.service';
+import { User as UserType , UserRole } from '../../model/User';
+
 
 
 @Component({

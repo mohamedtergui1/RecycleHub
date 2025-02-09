@@ -5,24 +5,7 @@ import { tap, catchError, map } from 'rxjs/operators';
 import { Router } from '@angular/router';
 import { throwError } from 'rxjs';
 
-export interface UserType {
-    id?: string;
-    email: string;
-    password: string;
-    nom: string;
-    prenom: string;
-    adresse: {
-        rue: string;
-        ville: string;
-        codePostal: string;
-    };
-    telephone: string;
-    dateNaissance: string;
-    role: 'particulier' | 'entreprise';
-    photoProfil?: string;
-    isEmailVerified?: boolean;
-    lastLogin?: Date;
-}
+import { User as UserType , UserRole } from '../../model/User';
 
 interface LoginResponse {
     user: Omit<UserType, 'password'>;
@@ -99,23 +82,18 @@ export class AuthService {
         return localStorage.getItem(this.TOKEN_KEY);
     }
 
+    getAuthUser(){
+        return this.currentUser$
+    }
+
     public storeAuthData(authData: LoginResponse): void {
         localStorage.setItem(this.TOKEN_KEY, authData.token);
         localStorage.setItem(this.USER_KEY, JSON.stringify(authData.user));
         this.currentUserSubject.next(authData.user);
     }
 
-    updateProfile(userId: string, updates: Partial<UserType>): Observable<UserType> {
-        return this.http.put<UserType>(`/users/${userId}`, updates).pipe(
-            tap((updatedUser) => {
-                const currentUser = this.currentUserSubject.value;
-                if (currentUser) {
-                    const mergedUser = { ...currentUser, ...updatedUser };
-                    localStorage.setItem(this.USER_KEY, JSON.stringify(mergedUser));
-                    this.currentUserSubject.next(mergedUser);
-                }
-            })
-        );
+    updateProfile(userId: string, updates: UserType): Observable<UserType> {
+        return this.http.put<UserType>(`/users/${userId}`, updates)
     }
 
     resetPassword(email: string): Observable<{ success: boolean }> {

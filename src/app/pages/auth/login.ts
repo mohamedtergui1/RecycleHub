@@ -11,8 +11,10 @@ import { InputTextModule } from 'primeng/inputtext';
 import { PasswordModule } from 'primeng/password';
 import { RippleModule } from 'primeng/ripple';
 import { AppFloatingConfigurator } from '../../layout/component/app.floatingconfigurator';
-import { AuthService, UserType } from '../service/auth.service';
+import { AuthService } from '../service/auth.service';
 import { LogoComponent } from '../../shared/logo/logo.component';
+import { User as UserType , UserRole } from '../../model/User';
+
 
 @Component({
     selector: 'app-login',
