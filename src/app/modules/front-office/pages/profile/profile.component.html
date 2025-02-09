@@ -1,0 +1,203 @@
+<!-- Loading Indicator -->
+<div *ngIf="isLoading$ | async" class="loading-indicator">
+  Loading profile...
+</div>
+
+<!-- Profile Content -->
+<div *ngIf="user$ | async as user" class="bg-white md:mx-auto rounded shadow-xl overflow-hidden">
+  <div class="h-[140px] bg-gradient-to-r from-primary to-primary-dark"></div>
+  <div class="px-5 py-2 flex flex-col gap-3 pb-6">
+    <!-- Profile Photo -->
+    <div class="h-[90px] shadow-md w-[90px] rounded-full border-4 overflow-hidden -mt-14 border-white">
+      <img
+        [src]="user.profilePhoto || defaultProfilePhoto"
+        class="w-full h-full rounded-full object-center object-cover"
+        alt="Profile Photo"
+      />
+    </div>
+
+    <!-- User Name and Role -->
+    <div class="">
+      <h3 class="text-xl text-neutral-dark relative font-bold leading-6">{{ user.firstName }} {{ user.lastName }}</h3>
+      <p class="text-sm text-gray-600"></p>
+    </div>
+    <div class="flex gap-3 flex-wrap">
+      <span *ngIf="user?.isCollector" class="rounded-sm bg-yellow-100 px-3 py-1 text-xs font-medium text-secondary">
+        Collector
+      </span>
+      <span *ngIf="!user?.isCollector" class="rounded-sm bg-green-100 px-3 py-1 text-xs font-medium text-primary-dark">
+        Client
+      </span>
+    </div>
+
+    <!-- Action Buttons -->
+    <div class="flex gap-2">
+      <a
+        routerLink="/request/view"
+        type="button"
+        class="inline-flex w-auto cursor-pointer select-none appearance-none items-center justify-center space-x-1 rounded border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-800 transition hover:border-gray-300 active:bg-white hover:bg-gray-100 focus:border-gray-300 focus:outline-none focus:ring-2 focus:ring-gray-300"
+      >
+        View Requests
+      </a>
+      <a
+        type="button"
+        class="inline-flex w-auto cursor-pointer select-none appearance-none items-center justify-center space-x-1 rounded border border-gray-200 bg-primary-dark px-3 py-2 text-sm font-medium text-neutral-light transition hover:border-blue-300 hover:bg-blue-600 active:bg-blue-700 focus:blue-gray-300 focus:outline-none focus:ring-2 focus:ring-blue-300"
+      >
+        Add to Request
+      </a>
+    </div>
+    <!-- Conversion Section -->
+    <div class="mt-6 p-4 bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 border border-gray-100">
+      <div class="flex items-center gap-3 mb-6">
+        <div class="p-2 bg-blue-50 rounded-lg">
+          <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"/>
+          </svg>
+        </div>
+        <div>
+          <h3 class="text-lg font-semibold text-gray-800">Points Conversion</h3>
+          <p class="text-sm text-gray-500">Your balance: {{ user.totalPoints || 0 }} P</p>
+        </div>
+      </div>
+
+      <!-- Conversion Options Grid -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+        <div
+          *ngFor="let option of conversionOptions"
+          (click)="selectConversion(option)"
+          [class]="['relative p-4 rounded-lg border cursor-pointer transition-all duration-200',
+        selectedConversion === option ?
+        'border-green-200 bg-green-50 ring-1 ring-green-100' :
+        'border-gray-200 hover:border-blue-200 hover:bg-blue-50',
+        (currentUser?.totalPoints || 0) < option.points ? 'opacity-50 cursor-not-allowed' : '']"
+        >
+          <!-- Badge -->
+          <div
+            *ngIf="selectedConversion === option"
+            class="absolute -top-2 -right-2 bg-green-500 text-white w-6 h-6 rounded-full flex items-center justify-center"
+          >
+            ✓
+          </div>
+
+          <div class="space-y-2">
+            <div class="flex items-center justify-between">
+              <span class="text-sm font-medium text-gray-700">{{ option.points }} P</span>
+              <span class="text-lg font-bold text-green-600">+{{ option.amount }} DH</span>
+            </div>
+            <div class="flex items-center justify-between">
+              <span class="text-xs text-gray-500">Rate</span>
+              <span class="text-xs font-medium text-blue-600">
+            {{ option.amount / option.points | currency:'MAD ' }}/point
+          </span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Selected Conversion Actions -->
+      <div *ngIf="selectedConversion" class="mt-6 pt-4 border-t border-gray-100">
+        <div class="flex items-center justify-between mb-4">
+          <div>
+            <p class="text-sm text-gray-600">Converting</p>
+            <p class="font-medium text-gray-800">
+              {{ selectedConversion.points }} P → {{ selectedConversion.amount }} DH
+            </p>
+          </div>
+          <button
+            (click)="selectedConversion = null"
+            class="text-gray-400 hover:text-gray-600 transition-colors"
+          >
+            ✕
+          </button>
+        </div>
+
+        <button
+          (click)="convertPoints()"
+          class="w-full py-2 bg-gradient-to-r from-green-500 to-green-600 text-white rounded-lg
+             hover:from-green-600 hover:to-green-700 transition-all shadow-sm hover:shadow-md"
+        >
+          Confirm Conversion
+        </button>
+      </div>
+
+      <!-- Error Message -->
+      <div *ngIf="conversionError" class="mt-4 p-3 bg-red-50 text-red-700 text-sm rounded-lg flex items-center gap-2">
+        <svg class="w-5 h-5 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/>
+        </svg>
+        <span>{{ conversionError }}</span>
+      </div>
+
+      <!-- Converted Balance -->
+      <div *ngIf="currentUser?.convertedAmount" class="mt-4 pt-4 border-t border-gray-100">
+        <div class="flex items-center justify-between">
+          <span class="text-sm text-gray-600">Available Credit</span>
+          <span class="text-lg font-bold text-green-600">{{ currentUser.convertedAmount }} DH</span>
+        </div>
+      </div>
+    </div>
+    <!-- About Section -->
+    <h4 class="text-md font-medium leading-3">About</h4>
+    <p class="text-sm text-stone-500">
+      Lorem, ipsum dolor sit amet consectetur adipisicing elit. Facere dolores aliquid sequi sunt iusto ipsum earum
+      natus omnis asperiores architecto praesentium dignissimos pariatur, ipsa cum? Voluptate vero eius at voluptas?
+    </p>
+
+    <!-- User Profile Details -->
+    <div class="bg-white overflow-hidden shadow rounded-lg border">
+      <div class="px-4 py-5 sm:px-6">
+        <h3 class="text-lg leading-6 font-medium text-gray-900">User Profile</h3>
+        <p class="mt-1 max-w-2xl text-sm text-gray-500">This is some information about the user.</p>
+      </div>
+      <div class="border-t border-gray-200 px-4 py-5 sm:p-0">
+        <dl class="sm:divide-y sm:divide-gray-200">
+          <!-- Full Name -->
+          <div class="py-3 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+            <dt class="text-sm font-medium text-gray-500">Full name</dt>
+            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+              {{ user.firstName }} {{ user.lastName }}
+            </dd>
+          </div>
+
+          <!-- Email Address -->
+          <div class="py-3 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+            <dt class="text-sm font-medium text-gray-500">Email address</dt>
+            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{{ user.email }}</dd>
+          </div>
+
+          <!-- Phone Number -->
+          <div class="py-3 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+            <dt class="text-sm font-medium text-gray-500">Phone number</dt>
+            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">{{ user.phone }}</dd>
+          </div>
+
+          <!-- Address -->
+          <div class="py-3 sm:py-5 sm:grid sm:grid-cols-3 sm:gap-4 sm:px-6">
+            <dt class="text-sm font-medium text-gray-500">Address</dt>
+            <dd class="mt-1 text-sm text-gray-900 sm:mt-0 sm:col-span-2">
+              {{ user.address.street }}<br />
+              {{ user.address.city }} {{ user.address.postalCode }}
+            </dd>
+          </div>
+        </dl>
+      </div>
+
+      <!-- Action Buttons -->
+      <div class="border-t border-gray-200 px-4 py-4 flex justify-end gap-3">
+        <a
+          routerLink="/edit-profile"
+          class="inline-flex items-center justify-center rounded border border-blue-600 bg-blue-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-blue-700 hover:border-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500"
+        >
+          Update Profile
+        </a>
+        <button
+          (click)="onDeleteAccount()"
+          [disabled]="isDeleting"
+          class="inline-flex items-center justify-center rounded border border-red-600 bg-red-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-red-700 hover:border-red-700 focus:outline-none focus:ring-2 focus:ring-red-500"
+        >
+          Delete Account
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
