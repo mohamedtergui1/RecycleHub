@@ -22,7 +22,7 @@
             <th class="px-3 py-2">Weight</th>
             <th class="px-3 py-2">Date/Time</th>
             <th class="px-3 py-2 text-center">Status</th>
-            <th class="px-3 py-2">Actions</th>
+       
           </tr>
           </thead>
           <tbody>
@@ -81,10 +81,7 @@
                 </button>
 
                 <!-- Existing Action Menu -->
-                <app-action-menu
-                  (edit)="request.id ? onEdit(request.id) : null"
-                  (delete)="request.id ? onDelete(request.id) : null">
-                </app-action-menu>
+             
               </div>
             </td>
           </tr>
